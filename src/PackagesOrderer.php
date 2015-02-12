@@ -1,5 +1,5 @@
 <?php
-namespace Mouf\Installer;
+namespace Harmony\Installer;
 
 use Composer\Package\PackageInterface;
 

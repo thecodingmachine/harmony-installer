@@ -1,5 +1,5 @@
 <?php
-namespace Mouf\Installer;
+namespace Harmony\Installer;
 use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
@@ -18,22 +18,18 @@ use Composer\EventDispatcher\EventSubscriberInterface;
  * RootContainer Installer for Composer.
  * (based on RobLoach's code for ComponentInstaller)
  */
-class MoufPlugin implements PluginInterface, EventSubscriberInterface {
+class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 
 	public function activate(Composer $composer, IOInterface $io) {
-		$moufFrameworkInstaller = new MoufFrameworkInstaller($io, $composer);
+		$moufFrameworkInstaller = new HarmonyFrameworkInstaller($io, $composer);
 		$composer->getInstallationManager()
 				->addInstaller($moufFrameworkInstaller);
 
-		$moufLibraryInstaller = new MoufLibraryInstaller($io, $composer);
-		$composer->getInstallationManager()
-				->addInstaller($moufLibraryInstaller);
-
 	}
-	
+
 	/**
 	 * Let's register the harmony dependencies update events.
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function getSubscribedEvents() {
@@ -46,7 +42,7 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 			),
         );
 	}
-	
+
 
 	/**
 	 * Script callback; Acted on after install.
@@ -64,19 +60,19 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 
 	/**
 	 * Script callback; Acted on after the autoloader is dumped.
-	 * 
+	 *
 	 * @param Event $event
 	 * @param string $action update or install
 	 * @throws \Exception
 	 */
 	private static function processHarmonyDependencies(Event $event, $action) {
-		if (!is_dir('vendor/mouf/mouf')) {
-			// If the vendor/mouf/mouf directory does not exist, it means we are
-			// running composer-mouf.sh update
+		if (!is_dir('vendor/harmony/harmony')) {
+			// If the vendor/harmony/harmony directory does not exist, it means we are
+			// running composer-harmony.sh update
 			// Let's ignore this process.
 			return;
 		}
-		
+
 		// Let's trigger EmbeddedComposer.
 		$composer = $event->getComposer();
 		$io = $event->getIO();
@@ -116,14 +112,14 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 				}
 			}
 		}
-		
+
 		// Finally, let's merge the extra.container-interop section of the composer-mouf.json file
-		$composerMouf = self::loadComposerHarmonyFile("vendor/mouf/mouf/composer-mouf.json", "");
-		$composerMoufSection = [ "extra" => [ "container-interop" => $composerMouf['extra']['container-interop'] ] ];
+		$composerHarmony = self::loadComposerHarmonyFile("vendor/harmony/harmony/composer-harmony-core.json", "");
+		$composerHarmonySection = [ "extra" => [ "container-interop" => $composerHarmony['extra']['container-interop'] ] ];
 
 		$globalHarmonyComposer = array_merge_recursive(
-				$globalHarmonyComposer, $composerMoufSection);
-		
+				$globalHarmonyComposer, $composerHarmonySection);
+
 		$targetHarmonyFile = 'composer-harmony-dependencies.json';
 
 		if (file_exists($targetHarmonyFile) && !is_writable($targetHarmonyFile)) {
@@ -154,7 +150,7 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 						"An error occured while writing file '"
 								. $targetHarmonyFile . "'");
 			}
-			
+
 			// Run command
 			$oldCwd = getcwd();
 			chdir('vendor/mouf/mouf');
@@ -185,8 +181,8 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 	}
 
 	/**
-	 * Loads a harmony file, returns the array, with autoloads modified to fit the directory. 
-	 * 
+	 * Loads a harmony file, returns the array, with autoloads modified to fit the directory.
+	 *
 	 * @param string $composerHarmonyFile
 	 */
 	private static function loadComposerHarmonyFile($composerHarmonyFile,
@@ -218,7 +214,7 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 				}
 			}
 		}
-		
+
 		// Let's wrap all container-factory sections into arrays so they get correctly merged.
 		if (isset($localConfig["extra"]["container-interop"]["container-factory"])) {
 			$factorySection = $localConfig["extra"]["container-interop"]["container-factory"];
@@ -229,7 +225,7 @@ class MoufPlugin implements PluginInterface, EventSubscriberInterface {
 
 		return $localConfig;
 	}
-	
+
 	/**
 	 * Returns if an array is associative or not.
 	 *

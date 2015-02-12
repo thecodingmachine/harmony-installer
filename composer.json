@@ -1,9 +1,9 @@
 {
-	"name" : "mouf/mouf-installer",
+	"name" : "harmony/harmony-installer",
 	"type" : "composer-plugin",
-	"description" : "The Mouf-installer package is a composer in charge of installing any package with the 'mouf-library' type.",
+	"description" : " The harmony-installer package is a composer plugin in charge of installing Harmony.",
 	"keywords" : [
-		"mouf",
+		"harmony",
 		"install"
 	],
 	"homepage" : "http://mouf-php.com",
@@ -15,18 +15,15 @@
 		}
 	],
 	"require" : {
-		"php" : ">=5.3.0",
+		"php" : ">=5.4.0",
 		"composer-plugin-api" : "1.0.0"
-	},
-	"conflict" : {
-		"mouf/mouf" : "<2.1"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Mouf\\Installer\\" : "src/"
+			"Harmony\\Installer\\" : "src/"
 		}
 	},
 	"extra" : {
-		"class" : "Mouf\\Installer\\MoufPlugin"
+		"class" : "Harmony\\Installer\\HarmonyPlugin"
 	}
 }
