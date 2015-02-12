@@ -9,9 +9,9 @@ use Composer\Installer\LibraryInstaller;
 
 /**
  * This class is in charge of handling the installation of the Harmony framework in composer.
- * The mouf framework has a special type "mouf-framework" in composer.json,
+ * Harmony has a special type "harmony-framework" in composer.json,
  * This class will be called to handle specific actions.
- * In particular, it will run composer on composer-mouf.json.
+ * In particular, it will run composer on composer-harmony-core.json.
  *
  * @author David Négrier
  */
@@ -50,7 +50,7 @@ class HarmonyFrameworkInstaller extends LibraryInstaller {
 		self::$isRunningHarmonyFrameworkInstaller = true;
 
 		$oldWorkingDirectory = getcwd();
-		chdir("vendor/mouf/mouf");
+		chdir("vendor/harmony/harmony");
 
 		// Now, let's try to run Composer recursively on composer-harmony.json...
 		$composer = Factory::create($this->io, 'composer-harmony-core.json');

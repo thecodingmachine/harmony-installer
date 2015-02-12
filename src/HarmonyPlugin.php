@@ -21,9 +21,9 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 
 	public function activate(Composer $composer, IOInterface $io) {
-		$moufFrameworkInstaller = new HarmonyFrameworkInstaller($io, $composer);
+		$harmonyFrameworkInstaller = new HarmonyFrameworkInstaller($io, $composer);
 		$composer->getInstallationManager()
-				->addInstaller($moufFrameworkInstaller);
+				->addInstaller($harmonyFrameworkInstaller);
 
 	}
 
@@ -113,7 +113,7 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 			}
 		}
 
-		// Finally, let's merge the extra.container-interop section of the composer-mouf.json file
+		// Finally, let's merge the extra.container-interop section of the composer-harmony-core.json file
 		$composerHarmony = self::loadComposerHarmonyFile("vendor/harmony/harmony/composer-harmony-core.json", "");
 		$composerHarmonySection = [ "extra" => [ "container-interop" => $composerHarmony['extra']['container-interop'] ] ];
 
@@ -153,7 +153,7 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 
 			// Run command
 			$oldCwd = getcwd();
-			chdir('vendor/mouf/mouf');
+			chdir('vendor/harmony/harmony');
 			$commandLine = PHP_BINARY . " console.php composer:$action";
 			passthru($commandLine);
 			chdir($oldCwd);
