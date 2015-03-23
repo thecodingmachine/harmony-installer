@@ -89,7 +89,7 @@ class FileService
             $phpCode .= "/*\n".$comment."\n*/\n";
         }
 
-        $phpCode .= "return ".var_export($variable, true);
+        $phpCode .= "return ".var_export($variable, true).";";
         $phpCode .= "\n";
 
         self::writeFile($filename, $phpCode);

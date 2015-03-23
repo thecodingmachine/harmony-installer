@@ -16,6 +16,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Harmony\Services\ClassExplorer;
 use Harmony\Services\ClassMapService;
 use Harmony\Services\FileService;
+use Seld\JsonLint\ParsingException;
 
 /**
  * RootContainer Installer for Composer.
@@ -253,6 +254,15 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 	 * @param Event $event
 	 */
 	private static function generateClassMapCache(Event $event) {
+		// Let's get the autoload file path
+		$config = $event->getComposer()->getConfig();
+		$filesystem = new Filesystem();
+		$filesystem->ensureDirectoryExists($config->get('vendor-dir'));
+		$vendorPath = $filesystem->normalizePath(realpath($config->get('vendor-dir')));
+
+		// Let's get started by requiring the project's autoload (to get access to Symfony filesystem)
+		require_once $vendorPath.'/autoload.php';
+
 		$io = $event->getIO();
 		$io->write('');
 		$io->write('Generating Harmony classmap');
@@ -261,15 +271,17 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 		$classMapService = new ClassMapService($event->getComposer());
 		$classMap = $classMapService->getClassMap(ClassMapService::MODE_DEPENDENCIES_CLASSES);
 
-		// Let's get the autoload file path
-		$config = $event->getComposer()->getConfig();
-		$filesystem = new Filesystem();
-		$filesystem->ensureDirectoryExists($config->get('vendor-dir'));
-		$vendorPath = $filesystem->normalizePath(realpath($config->get('vendor-dir')));
+		if ($io->isVerbose()) {
+			$io->write("  Analyzing classes to filter autoloadable classes.");
+		}
 
 		// Let's filter these classes
 		$classExplorer = new ClassExplorer();
 		$results = $classExplorer->analyze($classMap, $vendorPath.'/autoload.php');
+
+		if ($io->isVerbose()) {
+			$io->write("  Analysis finished.");
+		}
 
 		FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/classMap.php', $results);
 	}
