@@ -13,6 +13,9 @@ use Composer\Package\RootPackage;
 use Composer\Json\JsonFile;
 use Composer\Script\ScriptEvents;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Harmony\Services\ClassExplorer;
+use Harmony\Services\ClassMapService;
+use Harmony\Services\FileService;
 
 /**
  * RootContainer Installer for Composer.
@@ -40,6 +43,9 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 			ScriptEvents::POST_UPDATE_CMD => array(
 				array('postUpdate', 0)
 			),
+			ScriptEvents::POST_AUTOLOAD_DUMP => array(
+				array('postAutoloadDump', 0)
+			)
         );
 	}
 
@@ -57,6 +63,14 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 	public function postUpdate(Event $event) {
 		self::processHarmonyDependencies($event, 'update');
 	}
+
+	/**
+	 * Script callback; Acted on after dumpautoload.
+	 */
+	public function postAutoloadDump(Event $event) {
+		self::generateClassMapCache($event);
+	}
+
 
 	/**
 	 * Script callback; Acted on after the autoloader is dumped.
@@ -235,5 +249,32 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 	private static function isAssoc($arr)
 	{
 		return array_keys($arr) !== range(0, count($arr) - 1);
+	}
+
+	/**
+	 * Generates the cache containing the class map and errors including files for all dependencies.
+	 *
+	 * @param Event $event
+	 */
+	private static function generateClassMapCache(Event $event) {
+		$io = $event->getIO();
+		$io->write('');
+		$io->write('Generating Harmony classmap');
+
+		// Let's get all classes
+		$classMapService = new ClassMapService($event->getComposer());
+		$classMap = $classMapService->getClassMap(ClassMapService::MODE_DEPENDENCIES_CLASSES);
+
+		// Let's get the autoload file path
+		$config = $event->getComposer()->getConfig();
+		$filesystem = new Filesystem();
+		$filesystem->ensureDirectoryExists($config->get('vendor-dir'));
+		$vendorPath = $filesystem->normalizePath(realpath($config->get('vendor-dir')));
+
+		// Let's filter these classes
+		$classExplorer = new ClassExplorer();
+		$results = $classExplorer->analyze($classMap, $vendorPath.'/autoload.php');
+
+		FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/classMap.php', $results);
 	}
 }

@@ -6,6 +6,7 @@ use Composer\Repository\InstalledRepositoryInterface;
 use Composer\Factory;
 use Composer\Package\PackageInterface;
 use Composer\Installer\LibraryInstaller;
+use Harmony\Services\FileService;
 
 /**
  * This class is in charge of handling the installation of the Harmony framework in composer.
@@ -86,20 +87,7 @@ class HarmonyFrameworkInstaller extends LibraryInstaller {
 
 		$phpBinaryFile = 'vendor/harmony/harmony/harmony/no_commit/php_binary.php';
 
-		$dirname = dirname($phpBinaryFile);
-
-		if (file_exists($phpBinaryFile) && !is_writable($phpBinaryFile)) {
-			$this->io->write("<error>Error, unable to write file '".$phpBinaryFile."'. Please check file-permissions.</error>");
-			return;
-		}
-
-		if (!file_exists($phpBinaryFile) && !is_writable($dirname)) {
-			$this->io->write("<error>Error, unable to write a file in directory '".$dirname."'. Please check file-permissions.</error>");
-			return;
-		}
-
-		$content = "<?php\nreturn ".var_export(PHP_BINARY, true).";\n";
-		file_put_contents($phpBinaryFile, $content);
+		FileService::writePhpExportFile($phpBinaryFile, PHP_BINARY);
 	}
 
 	/**
