@@ -4,6 +4,7 @@ namespace Harmony\Services;
 use Composer\Autoload\ClassMapGenerator;
 use Composer\EventDispatcher\EventDispatcher;
 
+use Composer\IO\NullIO;
 use Composer\Package\Link;
 
 use Symfony\Component\Console\Application as BaseApplication;
@@ -84,7 +85,7 @@ class ClassMapService {
 			return $this->classMap;
 		}
 
-		$dispatcher = new EventDispatcher($this->composer, $this->io);
+		$dispatcher = new EventDispatcher($this->composer, new NullIO());
 		$autoloadGenerator = new \Composer\Autoload\AutoloadGenerator($dispatcher);
 
 		if ($mode === self::MODE_ALL_CLASSES || $mode === self::MODE_DEPENDENCIES_CLASSES) {

@@ -11,6 +11,7 @@ namespace Harmony\Services;
 
 use Harmony\HarmonyException;
 use Mouf\Reflection\MoufReflectionProxy;
+use Symfony\Component\Process\PhpProcess;
 
 /**
  * This class is in charge of exploring a list of classes and returning what classes can be
