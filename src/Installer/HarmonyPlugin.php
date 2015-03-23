@@ -94,11 +94,7 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 		$io->write('Updating Harmony dependencies');
 		$io->write('=============================');
 
-		$composerHarmonyFiles = [];
-
 		// Let's start by scanning all packages for a composer-harmony.json file.
-		//$localRepos = new CompositeRepository(array($composer->getRepositoryManager()->getLocalRepository()));
-		//$packagesList = $localRepos->getPackages();
 		$packagesList = $composer->getRepositoryManager()->getLocalRepository()
 				->getCanonicalPackages();
 		$packagesList[] = $composer->getPackage();

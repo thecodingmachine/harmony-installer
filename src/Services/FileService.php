@@ -46,7 +46,7 @@ class FileService
      * Will create the file's directory if needed with 775 rights.
      * Will throw an exception if file cannot be created.
      *
-     * @param string $file
+     * @param string $filename
      */
     public static function prepareDirectory($filename)
     {

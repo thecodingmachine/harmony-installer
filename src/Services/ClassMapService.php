@@ -54,17 +54,8 @@ class ClassMapService {
 	
 	protected $selfEdit;
 	
-	protected $classMap;
-	
 	public function __construct(Composer $composer) {
 		$this->composer = $composer;
-	}
-
-	private function configureEnv() {
-		if (dirname($this->composerJsonPath)) {
-			chdir(dirname($this->composerJsonPath));
-		}
-		\putenv('COMPOSER='.basename($this->composerJsonPath));
 	}
 
 	/**
@@ -75,15 +66,6 @@ class ClassMapService {
 	 * @return array <string, string>
 	 */
 	public function getClassMap($mode) {
-
-		// ALSO, MOVE THIS CODE INTO A HARMONY INSTALLER
-		// AND RUN IT FOR PACKAGES ONLY ON DUMPAUTOLOAD!!!!
-		// Then, we can run it for application classes only when refreshing, which should speed things a lot!
-
-
-		if ($this->classMap !== null) {
-			return $this->classMap;
-		}
 
 		$dispatcher = new EventDispatcher($this->composer, new NullIO());
 		$autoloadGenerator = new \Composer\Autoload\AutoloadGenerator($dispatcher);
@@ -118,16 +100,10 @@ class ClassMapService {
 		$targetDir = $vendorPath.'/'.$targetDir;
 		$filesystem->ensureDirectoryExists($targetDir);
 		$basePath = $filesystem->normalizePath(realpath(getcwd()));
-		$relVendorPath = $filesystem->findShortestPath(getcwd(), $vendorPath, true);
-		//$vendorPathCode = $filesystem->findShortestPathCode(realpath($targetDir), $vendorPath, true);
-		//$vendorPathToTargetDirCode = $filesystem->findShortestPathCode($vendorPath, realpath($targetDir), true);
-		
-				
+
 		// flatten array
 		$classMap = array();
-		
-		
-		
+
 		// Scan the PSR-0/4 directories for class files, and add them to the class map
 		foreach (array('psr-0', 'psr-4') as $psrType) {
 			foreach ($autoloads[$psrType] as $namespace => $paths) {
@@ -144,9 +120,6 @@ class ClassMapService {
 					foreach (ClassMapGenerator::createMap($dir, $whitelist) as $class => $path) {
 						if ('' === $namespace || 0 === strpos($class, $namespace)) {
 							if (!isset($classMap[$class])) {
-								//$path = $this->getPathCode($filesystem, $basePath, $vendorPath, $path);
-								//$classMap[$class] = $path.",\n";
-// 								$path = '/'.$filesystem->findShortestPath(getcwd(), $path, true);
 								$classMap[$class] = $path;
 							}
 						}
@@ -161,15 +134,12 @@ class ClassMapService {
 		foreach ($autoloads['classmap'] as $dir) {
 			$dir = $filesystem->normalizePath($filesystem->isAbsolutePath($dir) ? $dir : $basePath.'/'.$dir);
 			foreach (ClassMapGenerator::createMap($dir) as $class => $path) {
-// 				$path = '/'.$filesystem->findShortestPath(getcwd(), $path, true);
-				//$classMap[$class] = '$baseDir . '.var_export($path, true).",\n";
 				$classMap[$class] = $path;
 			}
 		}
 		
 		// FIXME: $autoloads['files'] seems ignored
 		
-		$this->classMap = $classMap;
 		return $classMap;
 	}
 }
