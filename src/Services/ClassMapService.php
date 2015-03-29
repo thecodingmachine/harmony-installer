@@ -50,9 +50,9 @@ class ClassMapService {
 	 * @var Composer
 	 */
 	protected $composer;
-	
+
 	protected $selfEdit;
-	
+
 	public function __construct(Composer $composer) {
 		$this->composer = $composer;
 	}
@@ -88,7 +88,7 @@ class ClassMapService {
 
 		$package = $this->composer->getPackage();
 		$config = $this->composer->getConfig();
-		
+
 		$packageMap = $autoloadGenerator->buildPackageMap($installationManager, $package, $packages);
 
 		if ($mode === self::MODE_DEPENDENCIES_CLASSES) {
@@ -98,9 +98,9 @@ class ClassMapService {
 
 		$autoloads = $autoloadGenerator->parseAutoloads($packageMap, $package);
 
-		
+
 		$targetDir = "composer";
-		
+
 		$filesystem = new Filesystem();
 		$filesystem->ensureDirectoryExists($config->get('vendor-dir'));
 		$vendorPath = strtr(realpath($config->get('vendor-dir')), '\\', '/');
@@ -137,9 +137,9 @@ class ClassMapService {
 				}
 			}
 		}
-		
-		
-			
+
+
+
 		$autoloads['classmap'] = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($autoloads['classmap']));
 		foreach ($autoloads['classmap'] as $dir) {
 			$dir = $filesystem->normalizePath($filesystem->isAbsolutePath($dir) ? $dir : $basePath.'/'.$dir);
@@ -147,8 +147,13 @@ class ClassMapService {
 				$classMap[$class] = $path;
 			}
 		}
-		
-		// FIXME: $autoloads['files'] seems ignored
+
+		foreach ($autoloads['files'] as $file) {
+			$file = $filesystem->normalizePath($filesystem->isAbsolutePath($file) ? $file : $basePath.'/'.$file);
+			foreach (self::exploreDir($file, null, $oldFileMap) as $class => $path) {
+				$classMap[$class] = $path;
+			}
+		}
 
 		//$time_end = microtime(true);
 		//echo "Autoload time: ".($time_end-$time_start)." s\n";
