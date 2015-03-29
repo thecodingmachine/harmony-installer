@@ -267,9 +267,16 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface {
 		$io->write('');
 		$io->write('Generating Harmony classmap');
 
+		if (file_exists(__DIR__.'/../../../harmony/generated/classMap.php')) {
+			$oldClassMap = include __DIR__.'/../../../harmony/generated/classMap.php';
+			$oldClassMap= $oldClassMap['classMap'];
+		} else {
+			$oldClassMap = array();
+		}
+
 		// Let's get all classes
 		$classMapService = new ClassMapService($event->getComposer());
-		$classMap = $classMapService->getClassMap(ClassMapService::MODE_DEPENDENCIES_CLASSES);
+		$classMap = $classMapService->getClassMap(ClassMapService::MODE_DEPENDENCIES_CLASSES, $oldClassMap);
 
 		if ($io->isVerbose()) {
 			$io->write("  Analyzing classes to filter autoloadable classes.");
