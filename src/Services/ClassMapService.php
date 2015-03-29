@@ -66,6 +66,7 @@ class ClassMapService {
 	 * @return array <string, string>
 	 */
 	public function getClassMap($mode) {
+		$time_start = microtime(true);
 
 		$dispatcher = new EventDispatcher($this->composer, new NullIO());
 		$autoloadGenerator = new \Composer\Autoload\AutoloadGenerator($dispatcher);
@@ -104,6 +105,9 @@ class ClassMapService {
 		// flatten array
 		$classMap = array();
 
+		// TODO: performance could be improved with a cache system that tracks file modification time and that
+		// only explores files that have not yet been explored....
+
 		// Scan the PSR-0/4 directories for class files, and add them to the class map
 		foreach (array('psr-0', 'psr-4') as $psrType) {
 			foreach ($autoloads[$psrType] as $namespace => $paths) {
@@ -139,7 +143,10 @@ class ClassMapService {
 		}
 		
 		// FIXME: $autoloads['files'] seems ignored
-		
+
+		$time_end = microtime(true);
+		echo "Autoload time: ".($time_end-$time_start)." s\n";
+
 		return $classMap;
 	}
 }
