@@ -15,6 +15,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Harmony\Services\ClassExplorer;
 use Harmony\Services\ClassMapService;
 use Harmony\Services\FileService;
+use Harmony\Services\ReflectionExporter;
 use Seld\JsonLint\ParsingException;
 
 /**
@@ -298,5 +299,18 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/classMap.php', $results);
+
+		if ($io->isVerbose()) {
+			$io->write("  Dumping reflection data.");
+		}
+
+		$reflectionExporter = new ReflectionExporter();
+		$reflectionData = $reflectionExporter->getReflectionData($results['classMap'], $vendorPath.'/autoload.php');
+
+		FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/reflectionData.php', $reflectionData);
+
+		if ($io->isVerbose()) {
+			$io->write("  Process finished.");
+		}
     }
 }

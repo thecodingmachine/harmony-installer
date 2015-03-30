@@ -15,7 +15,7 @@ use Symfony\Component\Process\PhpProcess;
 
 /**
  * This class is in charge of exploring a list of classes and returning what classes can be
- * included, and what classes can't be included (because they contain errors or are not PSR-1 compliant.
+ * included, and what classes can't be included (because they contain errors or are not PSR-1 compliant).
  *
  * @author David Negrier
  */
