@@ -68,7 +68,8 @@ class FileService
      * @param string $filename
      * @param string $content
      */
-    public static function writeFile($filename, $content) {
+    public static function writeFile($filename, $content)
+    {
         self::prepareDirectory($filename);
 
         $fs = new Filesystem();
@@ -79,10 +80,11 @@ class FileService
      * Writes a PHP file that contains only a "return" statement with a variable.
      *
      * @param string $filename
-     * @param mixed $variable Must be "var_export"able
-     * @param string $comment Comment to add in the header of the file
+     * @param mixed  $variable Must be "var_export"able
+     * @param string $comment  Comment to add in the header of the file
      */
-    public static function writePhpExportFile($filename, $variable, $comment = '') {
+    public static function writePhpExportFile($filename, $variable, $comment = '')
+    {
         $phpCode = "<?php\n";
 
         if ($comment) {
