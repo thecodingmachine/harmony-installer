@@ -275,8 +275,8 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
         $io->write('');
         $io->write('Generating Harmony classmap');
 
-        if (file_exists(__DIR__.'/../../../harmony/generated/classMap.php')) {
-            $oldClassMap = include __DIR__.'/../../../harmony/generated/classMap.php';
+        if (file_exists(__DIR__.'/../../../harmony/generated/vendorClassMap.php')) {
+            $oldClassMap = include __DIR__.'/../../../harmony/generated/vendorClassMap.php';
             $oldClassMap = $oldClassMap['classMap'];
         } else {
             $oldClassMap = array();
@@ -298,19 +298,19 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
             $io->write("  Analysis finished.");
         }
 
-        FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/classMap.php', $results);
+        FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/vendorClassMap.php', $results);
 
-		if ($io->isVerbose()) {
-			$io->write("  Dumping reflection data.");
-		}
+        if ($io->isVerbose()) {
+            $io->write("  Dumping reflection data.");
+        }
 
-		$reflectionExporter = new ReflectionExporter();
-		$reflectionData = $reflectionExporter->getReflectionData($results['classMap'], $vendorPath.'/autoload.php');
+        $reflectionExporter = new ReflectionExporter();
+        $reflectionData = $reflectionExporter->getReflectionData($results['classMap'], $vendorPath.'/autoload.php');
 
-		FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/reflectionData.php', $reflectionData);
+        FileService::writePhpExportFile(__DIR__.'/../../../harmony/generated/vendorReflectionData.php', $reflectionData);
 
-		if ($io->isVerbose()) {
-			$io->write("  Process finished.");
-		}
+        if ($io->isVerbose()) {
+            $io->write("  Process finished.");
+        }
     }
 }

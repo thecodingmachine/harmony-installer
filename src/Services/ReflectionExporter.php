@@ -9,8 +9,6 @@
  */
 namespace Harmony\Services;
 
-use Harmony\HarmonyException;
-use Mouf\Reflection\MoufReflectionProxy;
 use Symfony\Component\Process\PhpProcess;
 
 /**
@@ -61,6 +59,9 @@ class ReflectionExporter
                 }
 
                 $reflectionData[$className] = [
+                    "type" => ($reflectionClass->isInterface()?"interface":
+                    ($reflectionClass->isTrait()?"trait":"class")
+                    ),
                     "parents" => $parentClasses,
                     "interfaces" => $interfaces
                 ];
