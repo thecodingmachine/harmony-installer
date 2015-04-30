@@ -129,11 +129,13 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         // Finally, let's merge the extra.container-interop section of the composer-harmony-core.json file
-        $composerHarmony = self::loadComposerHarmonyFile("vendor/harmony/harmony/composer-harmony-core.json", "");
-        $composerHarmonySection = [ "extra" => [ "container-interop" => $composerHarmony['extra']['container-interop'] ] ];
+        if (file_exists("vendor/harmony/harmony/composer-harmony-core.json")) {
+            $composerHarmony = self::loadComposerHarmonyFile("vendor/harmony/harmony/composer-harmony-core.json", "");
+            $composerHarmonySection = [ "extra" => [ "container-interop" => $composerHarmony['extra']['container-interop'] ] ];
 
-        $globalHarmonyComposer = array_merge_recursive(
-                $globalHarmonyComposer, $composerHarmonySection);
+            $globalHarmonyComposer = array_merge_recursive(
+                    $globalHarmonyComposer, $composerHarmonySection);
+        }
 
         $targetHarmonyFile = 'composer-harmony-dependencies.json';
 
