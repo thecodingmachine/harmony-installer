@@ -16,11 +16,13 @@
 	],
 	"require" : {
 		"php" : ">=5.4.0",
-		"composer-plugin-api" : "1.0.0"
+		"composer-plugin-api" : "1.0.0",
+	    "symfony/process" : "~2.0 || ~3.0",
+	    "symfony/filesystem" : "~2.0 || ~3.0"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Harmony\\Installer\\" : "src/"
+			"Harmony\\" : "src/"
 		}
 	},
 	"extra" : {
