@@ -121,7 +121,7 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
                 $composerFile = $targetDir."composer-harmony.json";
                 if (file_exists($composerFile) && is_readable($composerFile)) {
                     $harmonyData = self::loadComposerHarmonyFile(
-                            $composerFile, '../../'.$targetDir);
+                            $composerFile, '../../../'.$targetDir);
                     $globalHarmonyComposer = array_merge_recursive(
                             $globalHarmonyComposer, $harmonyData);
                 }
@@ -131,7 +131,10 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
         // Finally, let's merge the extra.container-interop section of the composer-harmony-core.json file
         if (file_exists("vendor/harmony/harmony/composer-harmony-core.json")) {
             $composerHarmony = self::loadComposerHarmonyFile("vendor/harmony/harmony/composer-harmony-core.json", "");
-            $composerHarmonySection = [ "extra" => [ "container-interop" => $composerHarmony['extra']['container-interop'] ] ];
+            $composerHarmonySection = [ "extra" => [ "framework-interop" => $composerHarmony['extra']['framework-interop'] ] ];
+
+            // Let's also add a dependency to framework-interop autoinstaller plugin.
+            $composerHarmonySection['require']["framework-interop/module-autoinstaller"] = "~1.0";
 
             $globalHarmonyComposer = array_merge_recursive(
                     $globalHarmonyComposer, $composerHarmonySection);
