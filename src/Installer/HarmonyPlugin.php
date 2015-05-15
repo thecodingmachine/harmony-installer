@@ -246,6 +246,14 @@ class HarmonyPlugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
+        // Let's wrap all framework-factory sections into arrays so they get correctly merged.
+        if (isset($localConfig["extra"]["framework-interop"]["module-factory"])) {
+            $factorySection = $localConfig["extra"]["framework-interop"]["module-factory"];
+            if (!is_array($factorySection) || self::isAssoc($factorySection)) {
+                $localConfig["extra"]["framework-interop"]["module-factory"] = [ $factorySection ];
+            }
+        }
+
         return $localConfig;
     }
 

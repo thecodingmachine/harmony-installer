@@ -132,7 +132,7 @@ class ClassExplorer
         $autoloadFileFullPath = realpath($autoloadFile);
 
         $code = '<?php
-            require_once "'.$autoloadFileFullPath.'";
+            require_once '.var_export($autoloadFileFullPath, true).';
 
 			// Disable output buffering
 			while (ob_get_level() != 0) {
@@ -169,15 +169,23 @@ class ClassExplorer
 			echo "SQDSG4FDSE3234JK_ENDFILE\n";
 			';
 
-        $process = new PhpProcess($code);
+        // If Windows, let's bypass the buggy stdin handling
+        if (DIRECTORY_SEPARATOR == '\\') {
+            file_put_contents("tmp_code_to_proceed.php", $code);
+            $command = PHP_BINARY." -d xdebug.remote_autostart=0 -d xdebug.remote_enable=0 -d opcache.revalidate_freq=0 tmp_code_to_proceed.php 2>&1";
+            $output = shell_exec($command);
+            unlink("tmp_code_to_proceed.php");
+        } else {
+            $process = new PhpProcess($code);
+            $process->setEnhanceWindowsCompatibility(true);
+            // Let's increase the performance as much as possible by disabling xdebug.
+            // Also, let's set opcache.revalidate_freq to 0 to avoid caching issues with generated files.
+            // Finally, let's redirect STDERR to STDOUT
+            $process->setPhpBinary(PHP_BINARY." -d xdebug.remote_autostart=0 -d xdebug.remote_enable=0 -d opcache.revalidate_freq=0 2>&1");
+            $process->run();
 
-        // Let's increase the performance as much as possible by disabling xdebug.
-        // Also, let's set opcache.revalidate_freq to 0 to avoid caching issues with generated files.
-        // Finally, let's redirect STDERR to STDOUT
-        $process->setPhpBinary(PHP_BINARY." -d xdebug.remote_autostart=0 -d xdebug.remote_enable=0 -d opcache.revalidate_freq=0 2>&1");
-        $process->run();
-
-        $output = $process->getOutput();
+            $output = $process->getOutput();
+        }
 
         return $output;
     }
